@@ -1,49 +1,54 @@
-let reserveList = [];
+const Reserve = require('./model');
 
-const getReserveList = () => {
-    return reserveList;
+async function getReserveList() {
+    return await Reserve.findAll();
 }
 
-const addReserve = (reserve) => {
-    reserveList.push(reserve);
+async function addReserve(reserve) {
+    await Reserve.create(reserve);
 }
 
-const getReserve = (id) => {
-    for (let i = 0; i < reserveList.length; i++) 
-        if (reserveList[i].id == id) 
-            return reserveList[i];
+async function findReserve(parkingId, date) {
+    const reserve = await Reserve.findAll({
+        where: {
+            parkingId: parkingId,
+            date: date
+        }
+    });
+    return reserve.length > 0;
 }
 
-const updateReserve = (id, reserve) => {
-    for (let i = 0; i < reserveList.length; i++) 
-        if (reserveList[i].id == id) 
-            reserveList[i] = reserve;
+async function updateReserve(reserve) {
+    await Reserve.update(reserve, {
+        where: {
+            parkingId: reserve.parkingId,
+            date: reserve.date
+        }
+    });
 }
 
-const deleteReserve = (id) => {
-    reserveList = reserveList.filter(
-        reserve => reserve.id !== id
-    );
+async function deleteReserve(reserve) {
+    await Reserve.delete(reserve, {
+        where: {
+            parkingId: reserve.parkingId,
+            date: reserve.date
+        }
+    });
 }
 
-const getReserveByUser = (userId) => {
-    return reserveList.filter(
-        reserve => reserve.userId == userId
-    );
-}
-
-const getReserveByParking = (parkingId) => {
-    return reserveList.filter(
-        reserve => reserve.parkingId == parkingId
-    );
+async function getByParking(parkingId) {
+    return await Reserve.findAll({
+        where: {
+            parkingId: parkingId
+        }
+    });
 }
 
 module.exports = {
     add: addReserve,
     list: getReserveList,
-    get: getReserve,
+    find: findReserve,
     update: updateReserve,
     delete: deleteReserve,
-    getByUser: getReserveByUser,
-    getByParking: getReserveByParking
+    getByParking
 }

@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database/mysql/config');
-const User = require('../parking');
 
 const Reserve = sequelize.define('Reserve', {
     id: {
@@ -11,21 +10,17 @@ const Reserve = sequelize.define('Reserve', {
     parkingId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        // references: {
-        //     model: 'Parking',
-        //     key: 'id'
-        // }
+        unique: 'unique_reserve'
     },
     userId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        // references: {
-        //     model: 'User',
-        //     key: 'id'
-        // }
+        allowNull: false
     },
-    date: DataTypes.DATE,
-    durationMin: DataTypes.INTEGER
+    date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        unique: 'unique_reserve'
+    }
 });
 
 module.exports = Reserve;
