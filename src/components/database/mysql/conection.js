@@ -12,20 +12,21 @@ async function syncDatabase() {
 
         await sequelize.sync();
         console.log('Models synchronized with the database.');
+
+        asociateModels();
     } catch (error) {
         console.error('Error connecting to database:', error);
     }
 }
 
 function asociateModels() {
-    User.hasMany(Reserve);
-    Reserve.belongsTo(User);
+    User.hasMany(Reserve, { foreignKey: 'userId' });
+    Reserve.belongsTo(User, { foreignKey: 'userId' });
 
-    Parking.hasMany(Reserve);
-    Reserve.belongsTo(Parking);
+    Parking.hasMany(Reserve, { foreignKey: 'parkingId' });
+    Reserve.belongsTo(Parking, { foreignKey: 'parkingId' });
 }
 
 syncDatabase();
-asociateModels();
 
 module.exports = sequelize;
