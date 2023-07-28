@@ -8,26 +8,26 @@ async function getParkings() {
     return await Parking.findAll();
 }
 
-async function getParking(address) {
+async function getParking(id) {
     return await Parking.findOne({
         where: {
-            address: address
+            id: id
         }
     });
 }
 
-async function updateParking(address, parking) {
+async function updateParking(parking) {
     return await Parking.update(parking, {
         where: {
-            address: address
+            id: parking.id
         }
     });
 }
 
-async function deleteParking(address) {
+async function deleteParking(id) {
     return await Parking.destroy({
         where: {
-            address: address
+            id: id
         }
     });
 }

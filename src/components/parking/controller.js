@@ -1,5 +1,6 @@
 const repository = require('./repository');
 const response = require('../../network/response');
+const { getByParking } = require('../reserve');
 
 async function getParkings(req, res) {
     response.success(req, res, await repository.list(), 200);
@@ -23,13 +24,24 @@ async function addParking(req, resp) {
 }
 
 async function getParking(req, res) {
-    const address = req.body;
-    if (!address)
-        response.error('Invalid data');
-    else {
-        const parking = await repository.get(address);
-        response.success(req, res, parking, 200);
+    const id = req.params.id;
+    const parking = await repository.get(id);
+    const reserves = await getByParking(id);
+    reserves.map(reserve => {
+        return {
+            userId: reserve.userId,
+            date: reserve.date
+        }
+    })
+    let resParking = {
+        name: parking.name,
+        address: parking.address,
+        phone: parking.phone,
+        price: parking.price,
+        capacity: parking.capacity,
+        reserves: reserves
     }
+    response.success(req, res, resParking, 200);
 }
 
 async function deleteParking(req, res) {

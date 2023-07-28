@@ -1,6 +1,6 @@
 const repository = require('./repository');
 const response = require('../../network/response');
-const { list } = require('../parking');
+const { list } = require('../parking/repository');
 const parkingList = list();
 
 async function reserveParking(req, res) {
