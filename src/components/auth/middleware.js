@@ -16,4 +16,19 @@ function authenticateToken(req, res, next) {
   });
 }
 
-module.exports = authenticateToken;
+function authorizeRole(role) {
+  let permisions;
+  if (role === 'client') permisions = ['client', 'employee', 'admin'];
+  else if (role === 'employee') permisions = ['employee', 'admin'];
+  else permisions = ['admin'];
+
+  return async function (req, res, next) {
+    if (!permisions.includes(req.user.role))
+      return res.status(403).json({ error: 'User unauthorized for this operation' });
+    next();
+}}
+
+module.exports = {
+  authenticateToken,
+  authorizeRole
+}

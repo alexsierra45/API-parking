@@ -1,11 +1,19 @@
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY || 'defaultSecretKey';
+const { User } = require('../user');
 
-function login(req, res) {
-  const { username, password } = req.body;
+async function login(req, res) {
+  const { name, password } = req.body;
+  const user = await User.findOne({
+    where: {
+      name: name,
+      password: password
+    }
+  })
 
-  if (username === 'user' && password === 'password') {
-    const accessToken = jwt.sign({ username }, SECRET_KEY, { expiresIn: '1h' });
+  if (user) {
+    const { name, role, email, phone } = user;
+    const accessToken = jwt.sign({ name, role, email, phone }, SECRET_KEY, { expiresIn: '1h' });
     return res.json({ accessToken });
   } else {
     return res.status(401).json({ error: 'Invalid credentials' });
