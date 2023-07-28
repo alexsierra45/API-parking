@@ -12,8 +12,8 @@ async function login(req, res) {
   })
 
   if (user) {
-    const { name, role, email, phone } = user;
-    const accessToken = jwt.sign({ name, role, email, phone }, SECRET_KEY, { expiresIn: '1h' });
+    const { name, role, email, phone, id } = user;
+    const accessToken = jwt.sign({ name, role, email, phone, id }, SECRET_KEY, { expiresIn: '1h' });
     return res.json({ accessToken });
   } else {
     return res.status(401).json({ error: 'Invalid credentials' });

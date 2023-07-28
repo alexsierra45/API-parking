@@ -1,7 +1,9 @@
-const getParkings = require('./middleware')
 const Parking = require('./model');
+const { list } = require('./repository');
+const parking = require('./network');
 
 module.exports = {
-    getParkings,
-    Parking
+    Parking,
+    list,
+    parking
 }

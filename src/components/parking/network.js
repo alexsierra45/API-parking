@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const reserve = require('../reserve/network');
 const controller = require('./controller');
 const { authorizeRole } = require('../auth/middleware');
-
-router.use('/reserve', reserve);
 
 router.use( authorizeRole('employee'));
 router.get('/', controller.getParkings);

@@ -1,7 +1,8 @@
 const express = require('express');
-const parking = require('../components/parking/network');
-const user = require('../components/user/network');
-const auth = require('../components/auth/network');
+const { parking } = require('../components/parking');
+const { user } = require('../components/user');
+const { auth } = require('../components/auth');
+const { reserve } = require('../components/reserve');
 const { authenticateToken,  authorizeRole } = require('../components/auth/middleware');
 
 const routes = function (server) {
@@ -9,6 +10,7 @@ const routes = function (server) {
     
     server.use(authenticateToken);
     server.use('/parking', parking);
+    server.use('/reserve', reserve);
     server.use('/user',  authorizeRole('admin'), user);
 }
 

@@ -1,17 +1,24 @@
 const repository = require('./repository');
 const response = require('../../network/response');
+const { list } = require('../parking');
+const parkingList = list();
 
 async function reserveParking(req, res) {
-    const { userId, parkingsId, date} = req.body;
-    if(!userId || !parkingsId || !date)
+    const { id, date} = req.body;
+    if(!id || !date)
         response.error(req, res, 'Missing data', 400, 'Controller error');
     else {
-        availableParkingId = parkingsId.filter(
-            async parkingId => await repository.getByParking(parkingId)
-            .filter(reserve => reserve.date.getFullYear() === date.getFullYear()
-            && reserve.date.getMonth() === date.getMonth()
-            && reserve.date.getDate() === date.getDate()).length == 0
-        );
+        const availableParkingId = (await parkingList).filter(
+            async parking => {
+                const { id, capacity } = parking;
+                const reserveByParkingId = (await repository.getByParking(id)).filter(
+                    reserve => reserve.date.getFullYear() === date.getFullYear()
+                    && reserve.date.getMonth() === date.getMonth()
+                    && reserve.date.getDate() === date.getDate()
+                );
+                return reserveByParkingId.length < capacity;
+            }
+        ).map(parking => parking.id);
         if (availableParkingId.length > 0) {
             const parkingId = availableParkingId[0];
 
