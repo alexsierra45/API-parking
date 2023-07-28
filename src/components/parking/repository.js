@@ -1,29 +1,35 @@
-let parkingList = []
+const Parking = require('./model')
 
-const addParking = (parking) => {
-    parkingList.push(parking);
+async function addParking(parking) {
+    return await Parking.create(parking);
 }
 
-const getParkings = () => {
-    return parkingList;
+async function getParkings() {
+    return await Parking.findAll();
 }
 
-const getParking = (id) => {
-    for (let i = 0; i < parkingList.length; i++) 
-        if (parkingList[i].id == id) 
-            return parkingList[i];
+async function getParking(address) {
+    return await Parking.findOne({
+        where: {
+            address: address
+        }
+    });
 }
 
-const updateParking = (id, parking) => {
-    for (let i = 0; i < parkingList.length; i++) 
-        if (parkingList[i].id == id) 
-            parkingList[i] = parking;
+async function updateParking(address, parking) {
+    return await Parking.update(parking, {
+        where: {
+            address: address
+        }
+    });
 }
 
-const deleteParking = (id) => {
-    parkingList = parkingList.filter(
-        parking => parking.id != id
-    );
+async function deleteParking(address) {
+    return await Parking.destroy({
+        where: {
+            address: address
+        }
+    });
 }
 
 module.exports = {

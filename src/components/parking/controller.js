@@ -1,57 +1,50 @@
 const repository = require('./repository');
 const response = require('../../network/response');
 
-function getParkings(req, res) {
-    response.success(req, res, repository.list(), 200);
+async function getParkings(req, res) {
+    response.success(req, res, await repository.list(), 200);
 }
 
-function addParking(req, resp) {
-    const parking = req.body;
-    if (repository.list().map(p => p.id).includes(parking.id))
-        response.error('Existent id');
+async function addParking(req, resp) {
+    const { name, address, phone, price, capacity } = req.body;
+    if (!name || !address || !phone || !price || !capacity)
+        response.error('Invalid data');
     else {
-        repository.add(parking);
+        const newParking = {
+            name: name,
+            address: address,
+            phone: phone,
+            price: price,
+            capacity: capacity
+        }
+        const parking = await repository.add(newParking);
         response.success(req, resp, parking, 201);
-    } 
-}
-
-function getParking(req, res) {
-    const id = req.params.id;
-    const parking = repository.get(id);
-    response.success(req, res, parking, 200);
-}
-
-function addVehicle(req, resp) {
-    const parkingId = req.params.id;
-    const vehicle = req.body;
-    if (!vehicle) 
-            response.error('Invalid data');
-    else {
-        let newParking = {
-            id: parkingId,
-            vehicles: [vehicle]
-        }
-        for (let i = 0; i < repository.list().length; i++) {
-            const parking = repository.list()[i];
-            if (parking.id == parkingId) {
-                newParking.vehicles = parking.vehicles.concat(vehicle);
-                repository.update(parking.id, newParking);
-            }
-        }
-        response.success(req, resp, newParking, 201);
     }
 }
 
-function deleteParking(req, res) {
-    const id = req.params.id;
-    repository.delete(id);
-    response.success(req, res, `Parking ${id} deleted`, 200);
+async function getParking(req, res) {
+    const address = req.body;
+    if (!address)
+        response.error('Invalid data');
+    else {
+        const parking = await repository.get(address);
+        response.success(req, res, parking, 200);
+    }
+}
+
+async function deleteParking(req, res) {
+    const { adress } = req.body;
+    if (!adress)
+        response.error('Invalid data');
+    else {
+        const parking = await repository.delete(adress);
+        response.success(req, res, parking, 200);
+    }
 }
 
 module.exports = {
     getParkings,
     addParking,
     getParking,
-    addVehicle,
     deleteParking
 }

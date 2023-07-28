@@ -11,7 +11,7 @@ const Parking = sequelize.define('Parking', {
     address: DataTypes.STRING,
     phone: DataTypes.STRING,
     price: DataTypes.INTEGER,
-    totalSpaces: DataTypes.INTEGER,
+    capacity: DataTypes.INTEGER,
 });
 
 module.exports = Parking;
