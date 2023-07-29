@@ -4,30 +4,27 @@ const { list } = require('../parking/repository');
 const parkingList = list();
 
 async function reserveParking(req, res) {
-    const { id, date} = req.body;
-    if(!id || !date)
+    const userId = req.user.id;
+    let date = req.body.date;
+    date = new Date(date);
+    console.log(date);
+    if(!date)
         response.error(req, res, 'Missing data', 400, 'Controller error');
     else {
-        const availableParkingId = (await parkingList).filter(
-            async parking => {
-                const { id, capacity } = parking;
-                const reserveByParkingId = (await repository.getByParking(id)).filter(
-                    reserve => reserve.date.getFullYear() === date.getFullYear()
-                    && reserve.date.getMonth() === date.getMonth()
-                    && reserve.date.getDate() === date.getDate()
-                );
-                return reserveByParkingId.length < capacity;
-            }
-        ).map(parking => parking.id);
-        if (availableParkingId.length > 0) {
-            const parkingId = availableParkingId[0];
+        let availableParkings = [];
+        for (let parking of (await parkingList)) 
+            if (await checkAvailability(parking, date))
+                availableParkings.push(parking);
+        const availableParkingsId = availableParkings.map(parking => parking.id);
+
+        if (availableParkingsId.length > 0) {
+            const parkingId = availableParkingsId[0];
 
             const newReserve = {
                 userId: userId,
                 parkingId: parkingId,
                 date: date,
             }
-
             await repository.add(newReserve);
             response.success(req, res, newReserve, 201);
         }
@@ -35,8 +32,27 @@ async function reserveParking(req, res) {
     }
 }
 
+async function checkAvailability(parking, date) {
+    const { id, capacity } = parking;
+    const reserveByParkingId = (await repository.getByParking(id)).filter(
+        reserve => reserve.date.getFullYear() === date.getFullYear()
+        && reserve.date.getMonth() === date.getMonth()
+        && reserve.date.getDate() === date.getDate()
+    );
+    return reserveByParkingId.length < capacity;
+}
+
 async function getReserves(req, res) {
-    response.success(req, res, await repository.list(), 200);
+    const reserves = (await repository.list()).map(
+        reserve => {
+            return {
+                userId: reserve.userId,
+                parkingId: reserve.parkingId,
+                date: reserve.date
+            }
+        }
+    );
+    response.success(req, res, reserves, 200);
 }
 
 async function cancelReserve(req, res) {
